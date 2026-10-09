@@ -1,0 +1,1238 @@
+<!DOCTYPE html>
+<html lang="ja" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kuis Kanji Bahasa Jepang (No. 1 - 566)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+JP:wght@500;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Inter"', 'sans-serif'],
+            jp: ['"Noto Sans JP"', 'sans-serif'],
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between transition-colors duration-200 selection:bg-indigo-500 selection:text-white">
+
+  <!-- Navigasi Utama -->
+  <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-3xl mx-auto px-4 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-2 cursor-pointer" onclick="showScreen('home')">
+        <div class="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold font-jp text-lg shadow">
+          漢
+        </div>
+        <span class="font-bold text-base text-slate-100 tracking-tight">Kanji Quiz</span>
+      </div>
+
+      <div class="flex items-center gap-2">
+        <button onclick="toggleDarkMode()" class="p-2 rounded-lg text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition text-sm" title="Ubah Mode">
+          <span id="theme-icon">☀️</span>
+        </button>
+        <button onclick="showScreen('list')" class="px-3 py-1.5 rounded-lg text-xs font-semibold text-slate-300 hover:bg-slate-800 transition">
+          Daftar Kanji
+        </button>
+        <button onclick="showScreen('home')" class="px-3 py-1.5 rounded-lg text-xs font-semibold bg-indigo-600 text-white hover:bg-indigo-500 transition">
+          Kuis
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Kontainer Utama -->
+  <main class="max-w-3xl mx-auto px-4 py-8 flex-1 w-full flex items-center justify-center">
+
+    <!-- LAYAR UTAMA / PENGATURAN -->
+    <div id="screen-home" class="w-full max-w-lg">
+      <div class="bg-slate-800/80 rounded-2xl p-6 md:p-8 border border-slate-700/80 shadow-lg text-center">
+        
+        <h2 class="text-xl md:text-2xl font-bold text-slate-100 mb-1">Latihan Kanji & Hiragana</h2>
+        <p class="text-slate-400 text-xs md:text-sm mb-6">
+          Kuis membaca Kanji (No. 1 - 566) murni tanpa pengantar yang mengganggu.
+        </p>
+
+        <div class="space-y-4 text-left mb-6">
+          <!-- Tipe Kuis -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Tipe Kuis</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="setQuizType('mc')" id="type-mc" class="border border-indigo-500 bg-indigo-500/10 text-indigo-400 rounded-xl py-2.5 px-3 font-semibold text-xs transition">
+                Pilihan Ganda
+              </button>
+              <button onclick="setQuizType('typing')" id="type-typing" class="border border-slate-700 bg-slate-900/50 text-slate-300 hover:border-slate-600 rounded-xl py-2.5 px-3 font-semibold text-xs transition">
+                Mengetik Hiragana
+              </button>
+            </div>
+          </div>
+
+          <!-- Pilihan Bab / Halaman -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Pilih Bab / Halaman</label>
+            <select id="chapter-select" onchange="onChapterChange(this.value)" class="w-full border border-slate-700 bg-slate-900 rounded-xl px-3 py-2.5 text-xs font-medium text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer">
+              <option value="all">Semua Bab (No. 1 - 566)</option>
+              <option value="1">Bab 1 (No. 1 - 53)</option>
+              <option value="2">Bab 2 (No. 54 - 110)</option>
+              <option value="3">Bab 3 (No. 111 - 167)</option>
+              <option value="4">Bab 4 (No. 168 - 224)</option>
+              <option value="5">Bab 5 (No. 225 - 281)</option>
+              <option value="6">Bab 6 (No. 282 - 338)</option>
+              <option value="7">Bab 7 (No. 339 - 395)</option>
+              <option value="8">Bab 8 (No. 396 - 452)</option>
+              <option value="9">Bab 9 (No. 453 - 509)</option>
+              <option value="10">Bab 10 (No. 510 - 566)</option>
+            </select>
+          </div>
+
+          <!-- Rentang Nomor Soal -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Rentang Soal Kanji</label>
+            <select id="range-select" onchange="setRange(this.value)" class="w-full border border-slate-700 bg-slate-900 rounded-xl px-3 py-2.5 text-xs font-medium text-slate-200 focus:outline-none focus:border-indigo-500 cursor-pointer">
+              <option value="all">Semua Soal (No. 1 - 566)</option>
+            </select>
+          </div>
+
+          <!-- Jumlah Soal -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Jumlah Soal</label>
+            <div class="grid grid-cols-4 gap-2">
+              <button onclick="setCount(10)" class="count-btn border border-slate-700 bg-slate-900/50 text-slate-300 rounded-xl py-2 font-semibold text-xs transition">10</button>
+              <button onclick="setCount(20)" class="count-btn border border-indigo-500 bg-indigo-500/10 text-indigo-400 rounded-xl py-2 font-semibold text-xs transition">20</button>
+              <button onclick="setCount(50)" class="count-btn border border-slate-700 bg-slate-900/50 text-slate-300 rounded-xl py-2 font-semibold text-xs transition">50</button>
+              <button onclick="setCount('all')" class="count-btn border border-slate-700 bg-slate-900/50 text-slate-300 rounded-xl py-2 font-semibold text-xs transition">Semua</button>
+            </div>
+          </div>
+
+          <!-- Urutan Soal -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5">Urutan Soal</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="setOrderMode('random')" id="mode-random" class="border border-indigo-500 bg-indigo-500/10 text-indigo-400 rounded-xl py-2 font-semibold text-xs transition">Acak</button>
+              <button onclick="setOrderMode('seq')" id="mode-seq" class="border border-slate-700 bg-slate-900/50 text-slate-300 hover:border-slate-600 rounded-xl py-2 font-semibold text-xs transition">Berurutan</button>
+            </div>
+          </div>
+        </div>
+
+        <button onclick="startQuiz()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition text-sm shadow-md">
+          Mulai Kuis
+        </button>
+      </div>
+    </div>
+
+    <!-- LAYAR KUIS -->
+    <div id="screen-quiz" class="w-full max-w-lg hidden">
+      <div class="flex items-center justify-between mb-3 px-1 text-xs text-slate-400 font-medium">
+        <span class="font-mono bg-slate-800 px-2.5 py-1 rounded-md text-slate-300 border border-slate-700" id="quiz-kanji-no">No. --</span>
+        <span id="quiz-progress-text">1 / 20</span>
+      </div>
+
+      <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mb-5 border border-slate-800">
+        <div id="progress-bar" class="bg-indigo-500 h-full transition-all duration-300 w-0"></div>
+      </div>
+
+      <div class="bg-slate-800 rounded-2xl p-8 border border-slate-700 text-center mb-4 shadow-sm">
+        <div class="font-jp text-6xl md:text-7xl font-bold text-slate-100 py-4" id="quiz-kanji-text">
+          --
+        </div>
+      </div>
+
+      <div id="area-mc" class="grid grid-cols-1 md:grid-cols-2 gap-2.5 mb-5"></div>
+
+      <div id="area-typing" class="mb-5 hidden">
+        <div class="bg-slate-800 p-3 rounded-xl border border-slate-700">
+          <label class="block text-[11px] font-medium text-slate-400 mb-1">Ketik Hiragana / Romaji:</label>
+          <div class="flex gap-2">
+            <input type="text" id="typing-input" placeholder="contoh: きょうしつ atau kyoushitsu" autocomplete="off" class="w-full text-base font-bold font-jp text-slate-100 bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 outline-none focus:border-indigo-500" onkeydown="if(event.key==='Enter') submitTypingAnswer()">
+            <button onclick="submitTypingAnswer()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg text-xs font-semibold transition">
+              Kirim
+            </button>
+          </div>
+        </div>
+        <div id="typing-feedback" class="mt-2.5 p-3 rounded-lg text-xs font-semibold hidden text-center"></div>
+      </div>
+
+      <div class="flex justify-between items-center px-1">
+        <button onclick="showScreen('home')" class="text-xs text-slate-500 hover:text-slate-300 transition">
+          Selesai / Keluar
+        </button>
+        <button id="next-btn" onclick="nextQuestion()" class="hidden bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-5 py-2.5 rounded-lg transition">
+          Lanjut →
+        </button>
+      </div>
+    </div>
+
+    <!-- LAYAR HASIL -->
+    <div id="screen-result" class="w-full max-w-lg hidden">
+      <div class="bg-slate-800 rounded-2xl p-6 md:p-8 border border-slate-700 text-center shadow-lg">
+        <h2 class="text-xl font-bold text-slate-100 mb-1">Kuis Selesai</h2>
+        <p class="text-xs text-slate-400 mb-6" id="result-subtitle">Ringkasan hasil kuis kamu:</p>
+
+        <div class="bg-slate-900/60 rounded-xl p-5 mb-6 grid grid-cols-2 gap-4 border border-slate-700/50">
+          <div>
+            <p class="text-[11px] font-medium text-slate-400 mb-1">Jawaban Benar</p>
+            <p class="text-2xl font-bold text-indigo-400" id="result-score">0/0</p>
+          </div>
+          <div>
+            <p class="text-[11px] font-medium text-slate-400 mb-1">Akurasi</p>
+            <p class="text-2xl font-bold text-slate-100" id="result-percentage">0%</p>
+          </div>
+        </div>
+
+        <div class="space-y-2">
+          <button onclick="startQuiz()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-2.5 rounded-xl transition text-xs">
+            Ulangi Kuis
+          </button>
+          <button onclick="showScreen('home')" class="w-full border border-slate-700 text-slate-300 hover:bg-slate-700/50 font-semibold py-2.5 rounded-xl transition text-xs">
+            Pengaturan
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LAYAR DAFTAR KANJI -->
+    <div id="screen-list" class="w-full hidden">
+      <div class="bg-slate-800 rounded-2xl p-5 md:p-6 border border-slate-700 shadow-lg">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-4">
+          <div>
+            <h2 class="text-lg font-bold text-slate-100">Daftar Kanji (No. 1 - 566)</h2>
+            <p class="text-xs text-slate-400">Filter berdasarkan bab, urutkan nomor, atau cari kata.</p>
+          </div>
+          
+          <!-- Control Panel: Filter Bab, Sort, Search -->
+          <div class="flex flex-wrap items-center gap-2">
+            <select id="list-chapter-filter" onchange="filterKanjiList()" class="px-2.5 py-2 rounded-xl border border-slate-700 bg-slate-900 text-xs font-medium text-slate-200 outline-none focus:border-indigo-500 cursor-pointer">
+              <option value="all">Semua Bab</option>
+              <option value="1">Bab 1</option>
+              <option value="2">Bab 2</option>
+              <option value="3">Bab 3</option>
+              <option value="4">Bab 4</option>
+              <option value="5">Bab 5</option>
+              <option value="6">Bab 6</option>
+              <option value="7">Bab 7</option>
+              <option value="8">Bab 8</option>
+              <option value="9">Bab 9</option>
+              <option value="10">Bab 10</option>
+            </select>
+
+            <select id="list-sort-order" onchange="filterKanjiList()" class="px-2.5 py-2 rounded-xl border border-slate-700 bg-slate-900 text-xs font-medium text-slate-200 outline-none focus:border-indigo-500 cursor-pointer">
+              <option value="asc">No: Kecil → Besar</option>
+              <option value="desc">No: Besar → Kecil</option>
+            </select>
+
+            <input type="text" id="search-input" oninput="filterKanjiList()" placeholder="Cari..." class="px-3 py-2 rounded-xl border border-slate-700 bg-slate-900 text-xs font-medium text-slate-200 outline-none focus:border-indigo-500 w-full md:w-40">
+          </div>
+        </div>
+
+        <div class="overflow-x-auto max-h-[60vh] overflow-y-auto pr-1" id="kanji-table-container">
+          <!-- Rendered by JS -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer class="text-center py-4 text-[11px] text-slate-500">
+    Kanji Quiz App • Simpel & Bebas Gangguan
+  </footer>
+
+  <script>
+    // Master Data Kanji No. 1 - 566
+    const chaptersMeta = {
+      1: { min: 1, max: 53 },
+      2: { min: 54, max: 110 },
+      3: { min: 111, max: 167 },
+      4: { min: 168, max: 224 },
+      5: { min: 225, max: 281 },
+      6: { min: 282, max: 338 },
+      7: { min: 339, max: 395 },
+      8: { min: 396, max: 452 },
+      9: { min: 453, max: 509 },
+      10: { min: 510, max: 566 }
+    };
+
+    const rawKanjiData = [
+      // Bab 1
+      { no: 1, kanji: "魚", hiragana: "さかな", arti: "Ikan", romaji: "sakana" },
+      { no: 2, kanji: "肉", hiragana: "にく", arti: "Daging", romaji: "niku" },
+      { no: 3, kanji: "卵", hiragana: "たまご", arti: "Telur", romaji: "tamago" },
+      { no: 4, kanji: "水", hiragana: "みず", arti: "Air", romaji: "mizu" },
+      { no: 5, kanji: "食べます", hiragana: "たべます", arti: "Makan", romaji: "tabemasu" },
+      { no: 6, kanji: "飲みます", hiragana: "のみます", arti: "Minum", romaji: "nomimasu" },
+      { no: 7, kanji: "大きい", hiragana: "おおきい", arti: "Besar", romaji: "ookii" },
+      { no: 8, kanji: "小さい", hiragana: "ちいさい", arti: "Kecil", romaji: "chiisai" },
+      { no: 9, kanji: "新しい", hiragana: "あたらしい", arti: "Baru", romaji: "atarashii" },
+      { no: 10, kanji: "古い", hiragana: "ふるい", arti: "Lama, usang", romaji: "furui" },
+      { no: 11, kanji: "～時", hiragana: "～じ", arti: "~ jam", romaji: "ji" },
+      { no: 12, kanji: "～分", hiragana: "～ふん", arti: "~ menit", romaji: "fun" },
+      { no: 13, kanji: "～半", hiragana: "～はん", arti: "~ setengah", romaji: "han" },
+      { no: 14, kanji: "月曜日", hiragana: "げつようび", arti: "Senin", romaji: "getsuyoubi" },
+      { no: 15, kanji: "火曜日", hiragana: "かようび", arti: "Selasa", romaji: "kayoubi" },
+      { no: 16, kanji: "水曜日", hiragana: "すいようび", arti: "Rabu", romaji: "suiyoubi" },
+      { no: 17, kanji: "木曜日", hiragana: "もくようび", arti: "Kamis", romaji: "mokuyoubi" },
+      { no: 18, kanji: "金曜日", hiragana: "きんようび", arti: "Jumat", romaji: "kinyoubi" },
+      { no: 19, kanji: "土曜日", hiragana: "どようび", arti: "Sabtu", romaji: "doyoubi" },
+      { no: 20, kanji: "日曜日", hiragana: "にちようび", arti: "Minggu", romaji: "nichiyoubi" },
+      { no: 21, kanji: "言います", hiragana: "いいます", arti: "Berkata", romaji: "iimasu" },
+      { no: 22, kanji: "話します", hiragana: "はなします", arti: "Berbicara", romaji: "hanashimasu" },
+      { no: 23, kanji: "読みます", hiragana: "よみます", arti: "Membaca", romaji: "yomimasu" },
+      { no: 24, kanji: "見ます", hiragana: "みます", arti: "Melihat", romaji: "mimasu" },
+      { no: 25, kanji: "聞きます", hiragana: "ききます", arti: "Mendengarkan", romaji: "kikimasu" },
+      { no: 26, kanji: "書きます", hiragana: "かきます", arti: "Menulis", romaji: "kakimasu" },
+      { no: 27, kanji: "一", hiragana: "いち", arti: "Satu", romaji: "ichi" },
+      { no: 28, kanji: "二", hiragana: "に", arti: "Dua", romaji: "ni" },
+      { no: 29, kanji: "三", hiragana: "さん", arti: "Tiga", romaji: "san" },
+      { no: 30, kanji: "四", hiragana: "よん", arti: "Empat", romaji: "yon" },
+      { no: 31, kanji: "五", hiragana: "ご", arti: "Lima", romaji: "go" },
+      { no: 32, kanji: "六", hiragana: "ろく", arti: "Enam", romaji: "roku" },
+      { no: 33, kanji: "七", hiragana: "なな", arti: "Tujuh", romaji: "nana" },
+      { no: 34, kanji: "八", hiragana: "はち", arti: "Delapan", romaji: "hachi" },
+      { no: 35, kanji: "九", hiragana: "きゅう", arti: "Sembilan", romaji: "kyuu" },
+      { no: 36, kanji: "十", hiragana: "じゅう", arti: "Sepuluh", romaji: "juu" },
+      { no: 37, kanji: "～年", hiragana: "～ねん", arti: "~ tahun", romaji: "nen" },
+      { no: 38, kanji: "～月", hiragana: "～がつ", arti: "~ bulan", romaji: "gatsu" },
+      { no: 39, kanji: "～日", hiragana: "～にち", arti: "~ tanggal", romaji: "nichi" },
+      { no: 40, kanji: "東", hiragana: "ひがし", arti: "Timur", romaji: "higashi" },
+      { no: 41, kanji: "西", hiragana: "にし", arti: "Barat", romaji: "nishi" },
+      { no: 42, kanji: "南", hiragana: "みなみ", arti: "Selatan", romaji: "minami" },
+      { no: 43, kanji: "北", hiragana: "きた", arti: "Utara", romaji: "kita" },
+      { no: 44, kanji: "～口", hiragana: "～ぐち", arti: "~ pintu", romaji: "guchi" },
+      { no: 45, kanji: "東口", hiragana: "ひがしぐち", arti: "Pintu timur", romaji: "higashiguchi" },
+      { no: 46, kanji: "西口", hiragana: "にしぐち", arti: "Pintu barat", romaji: "nishiguchi" },
+      { no: 47, kanji: "南口", hiragana: "みなみぐち", arti: "Pintu selatan", romaji: "minamiguchi" },
+      { no: 48, kanji: "北口", hiragana: "きたぐち", arti: "Pintu utara", romaji: "kitaguchi" },
+      { no: 49, kanji: "買います", hiragana: "かいます", arti: "Membeli", romaji: "kaimasu" },
+      { no: 50, kanji: "買い物", hiragana: "かいもの", arti: "Belanja", romaji: "kaimono" },
+      { no: 51, kanji: "お金", hiragana: "おかね", arti: "Uang", romaji: "okane" },
+      { no: 52, kanji: "～円", hiragana: "～えん", arti: "~ yen", romaji: "en" },
+      { no: 53, kanji: "百", hiragana: "ひゃく", arti: "100", romaji: "hyaku" },
+
+      // Bab 2
+      { no: 54, kanji: "千", hiragana: "せん", arti: "1000", romaji: "sen" },
+      { no: 55, kanji: "万", hiragana: "まん", arti: "10000", romaji: "man" },
+      { no: 56, kanji: "百円", hiragana: "ひゃくえん", arti: "100 yen", romaji: "hyakuen" },
+      { no: 57, kanji: "千円", hiragana: "せんえん", arti: "1000 yen", romaji: "senen" },
+      { no: 58, kanji: "一万円", hiragana: "いちまんえん", arti: "10000 yen", romaji: "ichimanen" },
+      { no: 59, kanji: "行きます", hiragana: "いきます", arti: "Pergi", romaji: "ikimasu" },
+      { no: 60, kanji: "来ます", hiragana: "きます", arti: "Datang", romaji: "kimasu" },
+      { no: 61, kanji: "会います", hiragana: "あいます", arti: "Bertemu", romaji: "aimasu" },
+      { no: 62, kanji: "休みます", hiragana: "やすみます", arti: "Libur, istirahat", romaji: "yasumimasu" },
+      { no: 63, kanji: "日本", hiragana: "にほん", arti: "Jepang", romaji: "nihon" },
+      { no: 64, kanji: "東京", hiragana: "とうきょう", arti: "Tokyo", romaji: "toukyou" },
+      { no: 65, kanji: "私", hiragana: "わたし", arti: "Saya", romaji: "watashi" },
+      { no: 66, kanji: "父", hiragana: "ちち", arti: "Ayah", romaji: "chichi" },
+      { no: 67, kanji: "母", hiragana: "はは", arti: "Ibu", romaji: "haha" },
+      { no: 68, kanji: "子供", hiragana: "こども", arti: "Anak", romaji: "kodomo" },
+      { no: 69, kanji: "男", hiragana: "おとこ", arti: "Laki-laki", romaji: "otoko" },
+      { no: 70, kanji: "女", hiragana: "おんな", arti: "Perempuan", romaji: "onna" },
+      { no: 71, kanji: "人", hiragana: "ひと", arti: "Orang", romaji: "hito" },
+      { no: 72, kanji: "お父さん", hiragana: "おとうさん", arti: "Ayah (orang lain)", romaji: "otousan" },
+      { no: 73, kanji: "お母さん", hiragana: "おかあさん", arti: "Ibu (orang lain)", romaji: "okaasan" },
+      { no: 74, kanji: "何人", hiragana: "なんにん", arti: "Berapa orang?", romaji: "nannin" },
+      { no: 75, kanji: "国", hiragana: "くに", arti: "Negara", romaji: "kuni" },
+      { no: 76, kanji: "外国", hiragana: "がいこく", arti: "Luar negri", romaji: "gaikoku" },
+      { no: 77, kanji: "～語", hiragana: "～ご", arti: "~ Bahasa", romaji: "go" },
+      { no: 78, kanji: "日本語", hiragana: "にほんご", arti: "Bahasa jepang", romaji: "nihongo" },
+      { no: 79, kanji: "英語", hiragana: "えいご", arti: "Bahasa inggris", romaji: "eigo" },
+      { no: 80, kanji: "中国語", hiragana: "ちゅうごくご", arti: "Bahasa china", romaji: "chuugokugo" },
+      { no: 81, kanji: "～人", hiragana: "～じん", arti: "~ orang", romaji: "jin" },
+      { no: 82, kanji: "日本人", hiragana: "にほんじん", arti: "Orang jepang", romaji: "nihonjin" },
+      { no: 83, kanji: "好き", hiragana: "すき", arti: "Suka", romaji: "suki" },
+      { no: 84, kanji: "本", hiragana: "ほん", arti: "Buku", romaji: "hon" },
+      { no: 85, kanji: "読書", hiragana: "どくしょ", arti: "Bacaan", romaji: "dokusho" },
+      { no: 86, kanji: "何", hiragana: "なに", arti: "Apa?", romaji: "nani" },
+      { no: 87, kanji: "春", hiragana: "はる", arti: "Musim semi", romaji: "haru" },
+      { no: 88, kanji: "夏", hiragana: "なつ", arti: "Musim panas", romaji: "natsu" },
+      { no: 89, kanji: "秋", hiragana: "あき", arti: "Musim gugur", romaji: "aki" },
+      { no: 90, kanji: "冬", hiragana: "ふゆ", arti: "Musim dingin", romaji: "fuyu" },
+      { no: 91, kanji: "今", hiragana: "いま", arti: "Sekarang", romaji: "ima" },
+      { no: 92, kanji: "花", hiragana: "はな", arti: "Bunga", romaji: "hana" },
+      { no: 93, kanji: "海", hiragana: "うみ", arti: "Laut", romaji: "umi" },
+      { no: 94, kanji: "山", hiragana: "やま", arti: "Gunung", romaji: "yama" },
+      { no: 95, kanji: "川", hiragana: "かわ", arti: "Sungai", romaji: "kawa" },
+      { no: 96, kanji: "今日", hiragana: "きょう", arti: "Hari ini", romaji: "kyou" },
+      { no: 97, kanji: "天気", hiragana: "てんき", arti: "Cuaca", romaji: "tenki" },
+      { no: 98, kanji: "晴れ", hiragana: "はれ", arti: "Cerah", romaji: "hare" },
+      { no: 99, kanji: "雨", hiragana: "あめ", arti: "Hujan", romaji: "ame" },
+      { no: 100, kanji: "雪", hiragana: "ゆき", arti: "Salju", romaji: "yuki" },
+      { no: 101, kanji: "雲", hiragana: "くも", arti: "Mendung", romaji: "kumo" },
+      { no: 102, kanji: "風", hiragana: "かぜ", arti: "Angin", romaji: "kaze" },
+      { no: 103, kanji: "空", hiragana: "そら", arti: "Langit", romaji: "sora" },
+      { no: 104, kanji: "町", hiragana: "まち", arti: "Kota", romaji: "machi" },
+      { no: 105, kanji: "店", hiragana: "みせ", arti: "Toko", romaji: "mise" },
+      { no: 106, kanji: "人気", hiragana: "にんき", arti: "Popularitas", romaji: "ninki" },
+      { no: 107, kanji: "多い", hiragana: "おおい", arti: "Banyak", romaji: "ooi" },
+      { no: 108, kanji: "少ない", hiragana: "すくない", arti: "Sedikit", romaji: "sukunai" },
+      { no: 109, kanji: "高い", hiragana: "たかい", arti: "Mahal", romaji: "takai" },
+      { no: 110, kanji: "安い", hiragana: "やすい", arti: "Murah", romaji: "yasui" },
+
+      // Bab 3
+      { no: 111, kanji: "広い", hiragana: "ひろい", arti: "Luas", romaji: "hiroi" },
+      { no: 112, kanji: "道", hiragana: "みち", arti: "Jalan", romaji: "michi" },
+      { no: 113, kanji: "通り", hiragana: "とおり", arti: "Jalan", romaji: "toori" },
+      { no: 114, kanji: "右", hiragana: "みぎ", arti: "Kanan", romaji: "migi" },
+      { no: 115, kanji: "左", hiragana: "ひだり", arti: "Kiri", romaji: "hidari" },
+      { no: 116, kanji: "一つ", hiragana: "ひとつ", arti: "Satu buah", romaji: "hitotsu" },
+      { no: 117, kanji: "二つ", hiragana: "ふたつ", arti: "Dua buah", romaji: "futatsu" },
+      { no: 118, kanji: "赤い", hiragana: "あかい", arti: "Merah", romaji: "akai" },
+      { no: 119, kanji: "青い", hiragana: "あおい", arti: "Biru", romaji: "aoi" },
+      { no: 120, kanji: "黒い", hiragana: "くろい", arti: "Hitam", romaji: "kuroi" },
+      { no: 121, kanji: "白い", hiragana: "しろい", arti: "Putih", romaji: "shiroi" },
+      { no: 122, kanji: "時間", hiragana: "じかん", arti: "Waktu", romaji: "jikan" },
+      { no: 123, kanji: "場所", hiragana: "ばしょ", arti: "Tempat", romaji: "basho" },
+      { no: 124, kanji: "駅", hiragana: "えき", arti: "Stasiun", romaji: "eki" },
+      { no: 125, kanji: "日", hiragana: "ひ", arti: "Matahari", romaji: "hi" },
+      { no: 126, kanji: "出かけます", hiragana: "でかけます", arti: "Meninggalkan rumah", romaji: "dekakemasu" },
+      { no: 127, kanji: "持ちます", hiragana: "もちます", arti: "Membawa", romaji: "mochimasu" },
+      { no: 128, kanji: "止まります", hiragana: "とまります", arti: "Berhenti", romaji: "tomarimasu" },
+      { no: 129, kanji: "食事", hiragana: "しょくじ", arti: "Makan bersama", romaji: "shokuji" },
+      { no: 130, kanji: "仕事", hiragana: "しごと", arti: "Pekerjaan", romaji: "shigoto" },
+      { no: 131, kanji: "前", hiragana: "まえ", arti: "Sebelum", romaji: "mae" },
+      { no: 132, kanji: "後", hiragana: "あと", arti: "Setelah", romaji: "ato" },
+      { no: 133, kanji: "朝", hiragana: "あさ", arti: "Pagi", romaji: "asa" },
+      { no: 134, kanji: "昼", hiragana: "ひる", arti: "Siang", romaji: "hiru" },
+      { no: 135, kanji: "夜", hiragana: "よる", arti: "Malam", romaji: "yoru" },
+      { no: 136, kanji: "乗ります", hiragana: "のります", arti: "Naik", romaji: "norimasu" },
+      { no: 137, kanji: "学校", hiragana: "がっこう", arti: "Sekolahan", romaji: "gakkou" },
+      { no: 138, kanji: "小学校", hiragana: "しょうがっこう", arti: "SD", romaji: "shougakkou" },
+      { no: 139, kanji: "中学校", hiragana: "ちゅうがっこう", arti: "SMP", romaji: "chuugakkou" },
+      { no: 140, kanji: "高校", hiragana: "こうこう", arti: "SMA", romaji: "koukou" },
+      { no: 141, kanji: "大学", hiragana: "だいがく", arti: "Universitas", romaji: "daigaku" },
+      { no: 142, kanji: "先生", hiragana: "せんせい", arti: "Guru", romaji: "sensei" },
+      { no: 143, kanji: "学生", hiragana: "がくせい", arti: "Murid", romaji: "gakusei" },
+      { no: 144, kanji: "～年生", hiragana: "～ねんせい", arti: "Kelas ~", romaji: "nensei" },
+      { no: 145, kanji: "勉強", hiragana: "べんきょう", arti: "Pelajaran", romaji: "benkyou" },
+      { no: 146, kanji: "文化", hiragana: "ぶんか", arti: "Kebudayaan", romaji: "bunka" },
+      { no: 147, kanji: "音楽", hiragana: "おんがく", arti: "Musik", romaji: "ongaku" },
+      { no: 148, kanji: "旅行", hiragana: "りょこう", arti: "Wisata", romaji: "ryokou" },
+      { no: 149, kanji: "留学", hiragana: "りゅうがく", arti: "Belajar luar negri", romaji: "ryuugaku" },
+      { no: 150, kanji: "友達", hiragana: "ともだち", arti: "Teman", romaji: "tomodachi" },
+      { no: 151, kanji: "楽しい", hiragana: "たのしい", arti: "Gembira", romaji: "tanoshii" },
+      { no: 152, kanji: "週", hiragana: "しゅう", arti: "Minggu", romaji: "shuu" },
+      { no: 153, kanji: "～回", hiragana: "～かい", arti: "~ kali", romaji: "kai" },
+      { no: 154, kanji: "食べ物", hiragana: "たべもの", arti: "Makanan", romaji: "tabemono" },
+      { no: 155, kanji: "飲み物", hiragana: "のみもの", arti: "Minuman", romaji: "nomimono" },
+      { no: 156, kanji: "お茶", hiragana: "おちゃ", arti: "Teh hijau", romaji: "ocha" },
+      { no: 157, kanji: "お酒", hiragana: "おさけ", arti: "Sake", romaji: "osake" },
+      { no: 158, kanji: "作ります", hiragana: "つくります", arti: "Membuat", romaji: "tsukurimasu" },
+      { no: 159, kanji: "持っていきます", hiragana: "もっていきます", arti: "Membawa pergi", romaji: "motteikimasu" },
+      { no: 160, kanji: "お願いします", hiragana: "おねがいします", arti: "Tolong", romaji: "onegashimasu" },
+      { no: 161, kanji: "料理", hiragana: "りょうり", arti: "Masakan", romaji: "ryouri" },
+      { no: 162, kanji: "味", hiragana: "あじ", arti: "Rasa", romaji: "aji" },
+      { no: 163, kanji: "色", hiragana: "いろ", arti: "Warna", romaji: "iro" },
+      { no: 164, kanji: "野菜", hiragana: "やさい", arti: "Sayuran", romaji: "yasai" },
+      { no: 165, kanji: "少し", hiragana: "すこし", arti: "Sedikit", romaji: "sukoshi" },
+      { no: 166, kanji: "中", hiragana: "なか", arti: "Dalam", romaji: "naka" },
+      { no: 167, kanji: "入っています", hiragana: "はいっています", arti: "Masuk", romaji: "haitteimasu" },
+
+      // Bab 4
+      { no: 168, kanji: "会社", hiragana: "かいしゃ", arti: "Perusahaan", romaji: "kaisha" },
+      { no: 169, kanji: "本社", hiragana: "ほんしゃ", arti: "Kantor pusat", romaji: "honsha" },
+      { no: 170, kanji: "支社", hiragana: "ししゃ", arti: "Kantor cabang", romaji: "shisha" },
+      { no: 171, kanji: "出張", hiragana: "しゅっちょう", arti: "Dinas luar kota", romaji: "shucchou" },
+      { no: 172, kanji: "空港", hiragana: "くうこう", arti: "Bandara", romaji: "kuukou" },
+      { no: 173, kanji: "出発", hiragana: "しゅっぱつ", arti: "Keberangkatan", romaji: "shuppatsu" },
+      { no: 174, kanji: "到着", hiragana: "とうちゃく", arti: "Kedatangan", romaji: "touchaku" },
+      { no: 175, kanji: "午前", hiragana: "ごぜん", arti: "AM", romaji: "gozen" },
+      { no: 176, kanji: "午後", hiragana: "ごご", arti: "PM", romaji: "gogo" },
+      { no: 177, kanji: "自分", hiragana: "じぶん", arti: "Sendiri", romaji: "jibun" },
+      { no: 178, kanji: "電話", hiragana: "でんわ", arti: "Telepon", romaji: "denwa" },
+      { no: 179, kanji: "電気", hiragana: "でんき", arti: "Listrik", romaji: "denki" },
+      { no: 180, kanji: "電車", hiragana: "でんしゃ", arti: "Kereta", romaji: "densha" },
+      { no: 181, kanji: "車", hiragana: "くるま", arti: "Mobil", romaji: "kuruma" },
+      { no: 182, kanji: "送ります", hiragana: "おくります", arti: "Mengirim", romaji: "okurimasu" },
+      { no: 183, kanji: "使います", hiragana: "つかいます", arti: "Menggunakan", romaji: "tsukaimasu" },
+      { no: 184, kanji: "借ります", hiragana: "かりました", arti: "Meminjam", romaji: "karimasu" },
+      { no: 185, kanji: "体", hiragana: "からだ", arti: "Badan", romaji: "karada" },
+      { no: 186, kanji: "頭", hiragana: "あたま", arti: "Kepala", romaji: "atama" },
+      { no: 187, kanji: "目", hiragana: "め", arti: "Mata", romaji: "me" },
+      { no: 188, kanji: "口", hiragana: "くち", arti: "Mulut", romaji: "kuchi" },
+      { no: 189, kanji: "耳", hiragana: "みみ", arti: "Telinga", romaji: "mimi" },
+      { no: 190, kanji: "手", hiragana: "て", arti: "Tangan", romaji: "te" },
+      { no: 191, kanji: "足", hiragana: "あし", arti: "Kaki", romaji: "ashi" },
+      { no: 192, kanji: "上", hiragana: "うえ", arti: "Atas", romaji: "ue" },
+      { no: 193, kanji: "下", hiragana: "した", arti: "Bawah", romaji: "shita" },
+      { no: 194, kanji: "毎～", hiragana: "まい～", arti: "~ setiap", romaji: "mai" },
+      { no: 195, kanji: "毎朝", hiragana: "まいあさ", arti: "Setiap pagi", romaji: "maiasa" },
+      { no: 196, kanji: "毎日", hiragana: "まいにち", arti: "Setiap hari", romaji: "mainichi" },
+      { no: 197, kanji: "週末", hiragana: "しゅうまつ", arti: "Akhir pekan", romaji: "shuumatsu" },
+      { no: 198, kanji: "元気", hiragana: "げんき", arti: "Sehat", romaji: "genki" },
+      { no: 199, kanji: "外", hiragana: "そと", arti: "Luar", romaji: "soto" },
+      { no: 200, kanji: "起きます", hiragana: "おきます", arti: "Bangun tidur", romaji: "okimasu" },
+      { no: 201, kanji: "歩きます", hiragana: "あるきます", arti: "Berjalan", romaji: "arukimasu" },
+      { no: 202, kanji: "走ります", hiragana: "はしります", arti: "Berlari", romaji: "hashirimasu" },
+      { no: 203, kanji: "泳ぎます", hiragana: "およぎます", arti: "Berenang", romaji: "oyogimasu" },
+      { no: 204, kanji: "お祝い", hiragana: "おいわい", arti: "Perayaan", romaji: "oiwai" },
+      { no: 205, kanji: "誕生日", hiragana: "たんじょうび", arti: "Ulang tahun", romaji: "tanjoubi" },
+      { no: 206, kanji: "結婚", hiragana: "けっこん", arti: "Pernikahan", romaji: "kekkon" },
+      { no: 207, kanji: "絵", hiragana: "え", arti: "Gambar, lukisan", romaji: "e" },
+      { no: 208, kanji: "写真", hiragana: "しゃしん", arti: "Foto", romaji: "shashin" },
+      { no: 209, kanji: "時計", hiragana: "とけい", arti: "Jam", romaji: "tokei" },
+      { no: 210, kanji: "着ます", hiragana: "きます", arti: "Memakai pakaian", romaji: "kimasu" },
+      { no: 211, kanji: "先～", hiragana: "せん～", arti: "~ lalu", romaji: "sen" },
+      { no: 212, kanji: "先週", hiragana: "せんしゅう", arti: "Minggu lalu", romaji: "senshuu" },
+      { no: 213, kanji: "今月", hiragana: "こんげつ", arti: "Bulan ini", romaji: "kongetsu" },
+      { no: 214, kanji: "来年", hiragana: "らいねん", arti: "Tahun depan", romaji: "rainen" },
+      { no: 215, kanji: "今年", hiragana: "ことし", arti: "Tahun ini", romaji: "kotoshi" },
+      { no: 216, kanji: "去年", hiragana: "きょねん", arti: "Tahun lalu", romaji: "kyonen" },
+      { no: 217, kanji: "家", hiragana: "いえ", arti: "Rumah", romaji: "ie" },
+      { no: 218, kanji: "思います", hiragana: "おもいます", arti: "Mengira", romaji: "omoimasu" },
+      { no: 219, kanji: "自己紹介", hiragana: "じこしょうかい", arti: "Perkenalan", romaji: "jikoshoukai" },
+      { no: 220, kanji: "名前", hiragana: "なまえ", arti: "Nama", romaji: "namae" },
+      { no: 221, kanji: "意味", hiragana: "いみ", arti: "Arti", romaji: "imi" },
+      { no: 222, kanji: "本屋", hiragana: "ほんや", arti: "Toko buku", romaji: "honya" },
+      { no: 223, kanji: "近く", hiragana: "ちかく", arti: "Dekat", romaji: "chikaku" },
+      { no: 224, kanji: "住みます", hiragana: "すみます", arti: "Tinggal", romaji: "sumimasu" },
+
+      // Bab 5
+      { no: 225, kanji: "働きます", hiragana: "はたらきます", arti: "Bekerja", romaji: "hatarakimasu" },
+      { no: 226, kanji: "～番目", hiragana: "～ばんめ", arti: "Urutan yang ~", romaji: "banme" },
+      { no: 227, kanji: "兄", hiragana: "あに", arti: "Kakak laki2", romaji: "ani" },
+      { no: 228, kanji: "お兄さん", hiragana: "おにいさん", arti: "Kakak laki2 (orang lain)", romaji: "oniisan" },
+      { no: 229, kanji: "姉", hiragana: "あね", arti: "Kakak perempuan", romaji: "ane" },
+      { no: 230, kanji: "お姉さん", hiragana: "おねえさん", arti: "Kakak perempuan (orang lain)", romaji: "oneesan" },
+      { no: 231, kanji: "弟", hiragana: "おとうと", arti: "Adik laki2", romaji: "otouto" },
+      { no: 232, kanji: "妹", hiragana: "いもうと", arti: "Adik perempuan", romaji: "imouto" },
+      { no: 233, kanji: "家族", hiragana: "かぞく", arti: "Keluarga", romaji: "kazoku" },
+      { no: 234, kanji: "長い", hiragana: "ながい", arti: "Panjang", romaji: "nagai" },
+      { no: 235, kanji: "短い", hiragana: "みじかい", arti: "Pendek", romaji: "mijikai" },
+      { no: 236, kanji: "低い", hiragana: "ひくい", arti: "Rendah", romaji: "hikui" },
+      { no: 237, kanji: "上手", hiragana: "じょうず", arti: "Pandai", romaji: "jouzu" },
+      { no: 238, kanji: "歌", hiragana: "うた", arti: "Lagu", romaji: "uta" },
+      { no: 239, kanji: "歌います", hiragana: "うたいます", arti: "Menyanyi", romaji: "utaimasu" },
+      { no: 240, kanji: "客", hiragana: "きゃく", arti: "Tamu", romaji: "kyaku" },
+      { no: 241, kanji: "注文", hiragana: "ちゅうもん", arti: "Pesanan", romaji: "chuumon" },
+      { no: 242, kanji: "洋食", hiragana: "ようしょく", arti: "Makanan barat", romaji: "youshoku" },
+      { no: 243, kanji: "和食", hiragana: "わしょく", arti: "Makanan jepang", romaji: "washoku" },
+      { no: 244, kanji: "牛肉", hiragana: "ぎゅうにく", arti: "Daging sapi", romaji: "gyuuniku" },
+      { no: 245, kanji: "地方", hiragana: "ちほう", arti: "Daerah", romaji: "chihou" },
+      { no: 246, kanji: "有名", hiragana: "ゆうめい", arti: "Terkenal", romaji: "yuumei" },
+      { no: 247, kanji: "生", hiragana: "なま", arti: "Mentah", romaji: "nama" },
+      { no: 248, kanji: "冷たい", hiragana: "つめたい", arti: "Dingin", romaji: "tsumetai" },
+      { no: 249, kanji: "ご飯", hiragana: "ごはん", arti: "Nasi", romaji: "gohan" },
+      { no: 250, kanji: "塩", hiragana: "しお", arti: "Garam", romaji: "shio" },
+      { no: 251, kanji: "全部", hiragana: "ぜんぶ", arti: "Semua", romaji: "zenbu" },
+      { no: 252, kanji: "～方", hiragana: "～かた", arti: "Cara~", romaji: "kata" },
+      { no: 253, kanji: "食べ方", hiragana: "たべかた", arti: "Cara makan", romaji: "tabekata" },
+      { no: 254, kanji: "熱い", hiragana: "あつい", arti: "Panas", romaji: "atsui" },
+      { no: 255, kanji: "苦手", hiragana: "にがて", arti: "Tidak begitu suka", romaji: "nigate" },
+      { no: 256, kanji: "入れます", hiragana: "いれます", arti: "Memasukkan", romaji: "iremasu" },
+      { no: 257, kanji: "木", hiragana: "き", arti: "Pohon", romaji: "ki" },
+      { no: 258, kanji: "森", hiragana: "もり", arti: "Hutan", romaji: "mori" },
+      { no: 259, kanji: "島", hiragana: "しま", arti: "Pulau", romaji: "shima" },
+      { no: 260, kanji: "自然", hiragana: "しぜん", arti: "Alam", romaji: "shizen" },
+      { no: 261, kanji: "船", hiragana: "ふね", arti: "Kapal", romaji: "fune" },
+      { no: 262, kanji: "暑い", hiragana: "あつい", arti: "Panas", romaji: "atsui" },
+      { no: 263, kanji: "帰ります", hiragana: "かえります", arti: "Pulang", romaji: "kaerimasu" },
+      { no: 264, kanji: "予約します", hiragana: "よやくします", arti: "Memesan", romaji: "yoyakushimasu" },
+      { no: 265, kanji: "運転します", hiragana: "うんてんします", arti: "Menyetir", romaji: "untenshimasu" },
+      { no: 266, kanji: "～中", hiragana: "～ちゅう", arti: "Sedang/dalam ~", romaji: "chuu" },
+      { no: 267, kanji: "旅行中", hiragana: "りょこうちゅう", arti: "Sedang wisata", romaji: "ryokouchuu" },
+      { no: 268, kanji: "観光地", hiragana: "かんこうち", arti: "Tempat wisata", romaji: "kankouchi" },
+      { no: 269, kanji: "女性", hiragana: "じょせい", arti: "Wanita", romaji: "josei" },
+      { no: 270, kanji: "男性", hiragana: "だんせい", arti: "Pria", romaji: "dansei" },
+      { no: 271, kanji: "動物", hiragana: "どうぶつ", arti: "Hewan", romaji: "doubutsu" },
+      { no: 272, kanji: "空気", hiragana: "くうき", arti: "Udara", romaji: "kuuki" },
+      { no: 273, kanji: "料金", hiragana: "りょうきん", arti: "Biaya / tarif", romaji: "ryoukin" },
+      { no: 274, kanji: "無料", hiragana: "むりょう", arti: "Gratis", romaji: "muryou" },
+      { no: 275, kanji: "明るい", hiragana: "あかるい", arti: "Terang", romaji: "akarui" },
+      { no: 276, kanji: "便利", hiragana: "べんり", arti: "Praktis", romaji: "benri" },
+      { no: 277, kanji: "一年中", hiragana: "いちねんじゅう", arti: "Dalam 1 tahun", romaji: "ichinenjuu" },
+      { no: 278, kanji: "受付", hiragana: "うけつけ", arti: "Penerima tamu", romaji: "uketsuke" },
+      { no: 279, kanji: "広場", hiragana: "ひろば", arti: "Lapangan", romaji: "hiroba" },
+      { no: 280, kanji: "問題", hiragana: "もんだい", arti: "Soal, masalah", romaji: "mondai" },
+      { no: 281, kanji: "同じ", hiragana: "おなじ", arti: "Sama", romaji: "onaji" },
+
+      // Bab 6
+      { no: 282, kanji: "集まります", hiragana: "あつまります", arti: "Berkumpul", romaji: "atsumarimasu" },
+      { no: 283, kanji: "始まります", hiragana: "はじまります", arti: "Mulai", romaji: "hajimarimasu" },
+      { no: 284, kanji: "終わります", hiragana: "おわります", arti: "Selesai", romaji: "owarimasu" },
+      { no: 285, kanji: "中止します", hiragana: "ちゅうしします", arti: "Mengurungkan, membatalkan", romaji: "chuushishimasu" },
+      { no: 286, kanji: "教えて", hiragana: "おしえます", arti: "Memberitahu", romaji: "oshiemasu" },
+      { no: 287, kanji: "祭り", hiragana: "まつり", arti: "Perayaan", romaji: "matsuri" },
+      { no: 288, kanji: "日本祭り", hiragana: "にほんまつり", arti: "Perayaan jepang", romaji: "nihonmatsuri" },
+      { no: 289, kanji: "会場", hiragana: "かいじょう", arti: "Ruang pertemuan", romaji: "kaijou" },
+      { no: 290, kanji: "入場料", hiragana: "にゅうじょうりょう", arti: "Tarif masuk", romaji: "nyuujouryou" },
+      { no: 291, kanji: "参加者", hiragana: "さんかしゃ", arti: "Peserta", romaji: "sankasha" },
+      { no: 292, kanji: "急ぎます", hiragana: "いそぎます", arti: "Buru-buru", romaji: "isogimasu" },
+      { no: 293, kanji: "決めます", hiragana: "きめます", arti: "Menentukan", romaji: "kimemasu" },
+      { no: 294, kanji: "知ります", hiragana: "しります", arti: "Kenal, tahu", romaji: "shirimasu" },
+      { no: 295, kanji: "正月", hiragana: "しょうがつ", arti: "Tahun baru", romaji: "shougatsu" },
+      { no: 296, kanji: "年末", hiragana: "ねんまつ", arti: "Akhir tahun", romaji: "nenmatsu" },
+      { no: 297, kanji: "年始", hiragana: "ねんし", arti: "Awal tahun", romaji: "nenshi" },
+      { no: 298, kanji: "親", hiragana: "おや", arti: "Orang tua", romaji: "oya" },
+      { no: 299, kanji: "忙しい", hiragana: "いそがしい", arti: "Sibuk", romaji: "isogashii" },
+      { no: 300, kanji: "特別", hiragana: "とくべつ", arti: "Istimewa, special", romaji: "tokubetsu" },
+      { no: 301, kanji: "帰国", hiragana: "きこく", arti: "Pulang ke negara", romaji: "kikoku" },
+      { no: 302, kanji: "喜びます", hiragana: "よろこびます", arti: "Merasa senang/gembira", romaji: "yorokobimasu" },
+      { no: 303, kanji: "幸せ", hiragana: "しあわせ", arti: "Bahagia", romaji: "shiawase" },
+      { no: 304, kanji: "成長", hiragana: "せいちょう", arti: "Pertumbuhan, perkembangan", romaji: "seichou" },
+      { no: 305, kanji: "長生き", hiragana: "ながいき", arti: "Umur panjang, hidup lama", romaji: "nagaiki" },
+      { no: 306, kanji: "願い事", hiragana: "ねがいごと", arti: "Keinginan, kemauan, harapan", romaji: "negaigoto" },
+      { no: 307, kanji: "合格", hiragana: "ごうかく", arti: "Lulus", romaji: "goukaku" },
+      { no: 308, kanji: "試験", hiragana: "しけん", arti: "Ujian", romaji: "shiken" },
+      { no: 309, kanji: "大人", hiragana: "おとな", arti: "Orang Dewasa", romaji: "otona" },
+      { no: 310, kanji: "～式（成人式）", hiragana: "～しき（せいじんしき）", arti: "Upacara ~(upacara kedewasaan)", romaji: "shiki" },
+      { no: 311, kanji: "～市（さいたま市）", hiragana: "～し（さいたまし）", arti: "Kota~(kota saitama)", romaji: "shi" },
+      { no: 312, kanji: "商品", hiragana: "しょうひん", arti: "Barang dagangan", romaji: "shouhin" },
+      { no: 313, kanji: "電気製品", hiragana: "でんきせいひん", arti: "Peralatan listrik", romaji: "denkiseihin" },
+      { no: 314, kanji: "電子レンジ", hiragana: "でんしレンジ", arti: "Oven", romaji: "denshirenji" },
+      { no: 315, kanji: "～機（そうじ機）", hiragana: "～き（そうじき）", arti: "Mesin~(mesin penghisap debu)", romaji: "ki" },
+      { no: 316, kanji: "店員", hiragana: "てんいん", arti: "Penjaga toko", romaji: "tenin" },
+      { no: 317, kanji: "調子", hiragana: "ちょうし", arti: "Keadaan, kondisi", romaji: "choushi" },
+      { no: 318, kanji: "悪い", hiragana: "わるい", arti: "Jelek", romaji: "warui" },
+      { no: 319, kanji: "動きます", hiragana: "うごきます", arti: "Bergerak", romaji: "ugokimasu" },
+      { no: 320, kanji: "考えます", hiragana: "かんがえます", arti: "Berfikir", romaji: "kangaemasu" },
+      { no: 321, kanji: "音", hiragana: "おと", arti: "Suara", romaji: "oto" },
+      { no: 322, kanji: "出ます", hiragana: "でます", arti: "Keluar", romaji: "demasu" },
+      { no: 323, kanji: "機能", hiragana: "きのう", arti: "Fungsi", romaji: "kinou" },
+      { no: 324, kanji: "省エネ", hiragana: "しょうエネ", arti: "Penghematan energy", romaji: "shouene" },
+      { no: 325, kanji: "日本製", hiragana: "にほんせい", arti: "Produk/buatan jepang", romaji: "nihonsei" },
+      { no: 326, kanji: "重い", hiragana: "おもい", arti: "Berat", romaji: "omoi" },
+      { no: 327, kanji: "軽い", hiragana: "かるい", arti: "Ringan", romaji: "karui" },
+      { no: 328, kanji: "静か", hiragana: "しずか", arti: "Tenang", romaji: "shizuka" },
+      { no: 329, kanji: "早く", hiragana: "はやく", arti: "Cepat", romaji: "hayaku" },
+      { no: 330, kanji: "方（こっちの方）", hiragana: "ほう（こっちのほう）", arti: "Arah(arah disini)", romaji: "hou" },
+      { no: 331, kanji: "洗います", hiragana: "あらいます", arti: "Mencuci", romaji: "araimasu" },
+      { no: 332, kanji: "満足します", hiragana: "まんぞくします", arti: "Puas, merasa puas", romaji: "manzokushimasu" },
+      { no: 333, kanji: "京都", hiragana: "きょうと", arti: "Kyoto", romaji: "kyouto" },
+      { no: 334, kanji: "神社", hiragana: "じんじゃ", arti: "Kuil sinto", romaji: "jinjya" },
+      { no: 335, kanji: "お寺", hiragana: "おてら", arti: "Kuil", romaji: "otera" },
+      { no: 336, kanji: "仏教", hiragana: "ぶっきょう", arti: "Agama budha", romaji: "bukkyou" },
+      { no: 337, kanji: "歴史", hiragana: "れきし", arti: "Sejarah", romaji: "rekishi" },
+      { no: 338, kanji: "世界", hiragana: "せかい", arti: "Dunia", romaji: "sekai" },
+
+      // Bab 7
+      { no: 339, kanji: "中心", hiragana: "ちゅうしん", arti: "Pusat", romaji: "chuushin" },
+      { no: 340, kanji: "～世紀（8世紀）", hiragana: "～せいき（はっせいき）", arti: "Abad~", romaji: "seiki" },
+      { no: 341, kanji: "～的", hiragana: "～てき", arti: "Berbau~ / ke~ an", romaji: "teki" },
+      { no: 342, kanji: "日本的", hiragana: "にほんてき", arti: "Berbau jepang", romaji: "nihonteki" },
+      { no: 343, kanji: "歴史的", hiragana: "れきしてき", arti: "Bersejarah", romaji: "rekishiteki" },
+      { no: 344, kanji: "飲食", hiragana: "いんしょく", arti: "Makan minum", romaji: "inshoku" },
+      { no: 345, kanji: "禁止", hiragana: "きんし", arti: "Larangan", romaji: "kinshi" },
+      { no: 346, kanji: "説明", hiragana: "せつめい", arti: "Penjelasan", romaji: "setsumei" },
+      { no: 347, kanji: "道具", hiragana: "どうぐ", arti: "Peralatan", romaji: "dougu" },
+      { no: 348, kanji: "博物館", hiragana: "はくぶつかん", arti: "Museum", romaji: "hakubutsukan" },
+      { no: 349, kanji: "必要", hiragana: "ひつよう", arti: "Keperluan, kebutuhan", romaji: "hitsuyou" },
+      { no: 350, kanji: "～階（2階）", hiragana: "～かい（にかい）", arti: "Lantai~ (lantai 2)", romaji: "kai" },
+      { no: 351, kanji: "油", hiragana: "あぶら", arti: "Minyak, oli", romaji: "abura" },
+      { no: 352, kanji: "紙", hiragana: "かみ", arti: "Kertas", romaji: "kami" },
+      { no: 353, kanji: "温度", hiragana: "おんど", arti: "Suhu, derajat", romaji: "ondo" },
+      { no: 354, kanji: "活動", hiragana: "かつどう", arti: "Kegiatan, aktivitas", romaji: "katsudou" },
+      { no: 355, kanji: "会議室", hiragana: "かいぎしつ", arti: "Ruang rapat", romaji: "kaigishitsu" },
+      { no: 356, kanji: "寒い", hiragana: "さむい", arti: "Dingin (suhu)", romaji: "samui" },
+      { no: 357, kanji: "出します", hiragana: "だします", arti: "Mengeluarkan, mengirim (surat)", romaji: "dashimasu" },
+      { no: 358, kanji: "～度（28度）", hiragana: "～ど（にじゅうはちど）", arti: "~derajat (28 derajat)", romaji: "do" },
+      { no: 359, kanji: "～点（100点）", hiragana: "～てん（100てん）", arti: "Nilai~ (nilai 100)", romaji: "ten" },
+      { no: 360, kanji: "服", hiragana: "ふく", arti: "Baju, pakaian", romaji: "fuku" },
+      { no: 361, kanji: "自転車", hiragana: "じてんしゃ", arti: "Sepeda", romaji: "jitensha" },
+      { no: 362, kanji: "自動車", hiragana: "じどうしゃ", arti: "Mobil", romaji: "jidousha" },
+      { no: 363, kanji: "売ります", hiragana: "うります", arti: "Menjual", romaji: "urimasu" },
+      { no: 364, kanji: "貸します", hiragana: "かします", arti: "Meminjamkan", romaji: "kashimasu" },
+      { no: 365, kanji: "返します", hiragana: "かえします", arti: "Mengembalikan", romaji: "kaeshimasu" },
+      { no: 366, kanji: "変わります", hiragana: "かわります", arti: "Mengganti", romaji: "kawarimasu" },
+      { no: 367, kanji: "～用", hiragana: "～よう", arti: "Urusan, keperluan~", romaji: "you" },
+      { no: 368, kanji: "子供用", hiragana: "こどもよう", arti: "Urusan anak", romaji: "kodomoyou" },
+      { no: 369, kanji: "人生", hiragana: "じんせい", arti: "Kehidupan", romaji: "jinsei" },
+      { no: 370, kanji: "歌手", hiragana: "かしゅ", arti: "Penyanyi", romaji: "kashu" },
+      { no: 371, kanji: "選手", hiragana: "せんしゅ", arti: "Atlit, pemain", romaji: "senshu" },
+      { no: 372, kanji: "画家", hiragana: "がか", arti: "Pelukis", romaji: "gaka" },
+      { no: 373, kanji: "作家", hiragana: "さっか", arti: "Pengarang", romaji: "sakka" },
+      { no: 374, kanji: "入学", hiragana: "にゅうがく", arti: "Masuk sekolah", romaji: "nyuugaku" },
+      { no: 375, kanji: "卒業", hiragana: "そつぎょう", arti: "Lulus", romaji: "sotsugyou" },
+      { no: 376, kanji: "病気", hiragana: "びょうき", arti: "Sakit", romaji: "byouki" },
+      { no: 377, kanji: "若い", hiragana: "わかい", arti: "Muda", romaji: "wakai" },
+      { no: 378, kanji: "生まれます", hiragana: "うまれます", arti: "Lahir", romaji: "umaremasu" },
+      { no: 379, kanji: "思い出", hiragana: "おもいで", arti: "Kenang-kenangan, kenangan", romaji: "omoide" },
+      { no: 380, kanji: "生活", hiragana: "せいかつ", arti: "Kehidupan", romaji: "seikatsu" },
+      { no: 381, kanji: "映画", hiragana: "えいが", arti: "Film", romaji: "eiga" },
+      { no: 382, kanji: "夫", hiragana: "おっと", arti: "Suami (sendiri)", romaji: "otto" },
+      { no: 383, kanji: "妻", hiragana: "つま", arti: "Istri (sendiri)", romaji: "tsuma" },
+      { no: 384, kanji: "両親", hiragana: "りょうしん", arti: "Orang tua", romaji: "ryoushin" },
+      { no: 385, kanji: "不便", hiragana: "ふべん", arti: "Tidak praktis", romaji: "fuben" },
+      { no: 386, kanji: "選びます", hiragana: "えらびます", arti: "Memilih", romaji: "erabimasu" },
+      { no: 387, kanji: "寝ます", hiragana: "ねます", arti: "Tidur", romaji: "nemasu" },
+      { no: 388, kanji: "サッカー場", hiragana: "サッカーじょう", arti: "Lapangan sepak bola", romaji: "sakkajou" },
+      { no: 389, kanji: "試合", hiragana: "しあい", arti: "Pertandingan", romaji: "shiai" },
+      { no: 390, kanji: "日曜日", hiragana: "にちようび", arti: "Minggu", romaji: "nichiyoubi" },
+      { no: 391, kanji: "強い", hiragana: "つよい", arti: "Kuat", romaji: "tsuyoi" },
+      { no: 392, kanji: "弱い", hiragana: "よわい", arti: "Lemah", romaji: "yowai" },
+      { no: 393, kanji: "勝ちます", hiragana: "かちます", arti: "Menang", romaji: "kachimasu" },
+      { no: 394, kanji: "負けます", hiragana: "まけます", arti: "Kalah", romaji: "makemasu" },
+      { no: 395, kanji: "～対～（2対1）", hiragana: "～たい～（にたいいち）", arti: "~lawan~ (2 lawan 1)", romaji: "tai" },
+
+      // Bab 8
+      { no: 396, kanji: "庭", hiragana: "にわ", arti: "Halaman", romaji: "niwa" },
+      { no: 397, kanji: "公園", hiragana: "こうえん", arti: "Taman", romaji: "kouen" },
+      { no: 398, kanji: "病院", hiragana: "びょういん", arti: "Rumah sakit", romaji: "byouin" },
+      { no: 399, kanji: "交通", hiragana: "こうつう", arti: "Lalu lintas", romaji: "koutsuu" },
+      { no: 400, kanji: "通勤", hiragana: "つうきん", arti: "Perjalanan ke kantor", romaji: "tsuukin" },
+      { no: 401, kanji: "安全", hiragana: "あんぜん", arti: "Keselamatan", romaji: "anzen" },
+      { no: 402, kanji: "危ない", hiragana: "あぶない", arti: "Bahaya", romaji: "abunai" },
+      { no: 403, kanji: "遠い", hiragana: "とおい", arti: "Jauh", romaji: "tooi" },
+      { no: 404, kanji: "努めます", hiragana: "つとめます", arti: "Bekerja", romaji: "tsutomemasu" },
+      { no: 405, kanji: "～以上", hiragana: "～いじょう", arti: "~lebih (2 jam lebih)", romaji: "ijou" },
+      { no: 406, kanji: "～以下", hiragana: "～いか", arti: "~kurang (kurang dari 6 man yen)", romaji: "ika" },
+      { no: 407, kanji: "海外", hiragana: "かいがい", arti: "Luar negri", romaji: "kaigai" },
+      { no: 408, kanji: "食生活", hiragana: "しょくせいかつ", arti: "Susunan makanan", romaji: "shokuseikatsu" },
+      { no: 409, kanji: "健康", hiragana: "けんこう", arti: "Kesehatan", romaji: "kenkou" },
+      { no: 410, kanji: "家庭料理", hiragana: "かていりょうり", arti: "Masakan rumah tangga", romaji: "kateiryouri" },
+      { no: 411, kanji: "材料", hiragana: "ざいりょう", arti: "Bahan", romaji: "zairyou" },
+      { no: 412, kanji: "量", hiragana: "りょう", arti: "Jumlah, kuantitas, banyaknya", romaji: "ryou" },
+      { no: 413, kanji: "米", hiragana: "こめ", arti: "Beras", romaji: "kome" },
+      { no: 414, kanji: "～食", hiragana: "～しょく", arti: "Makan ~", romaji: "shoku" },
+      { no: 415, kanji: "朝食", hiragana: "ちょうしょく", arti: "Makan pagi", romaji: "choushoku" },
+      { no: 416, kanji: "昼食", hiragana: "ちゅうしょく", arti: "Makan siang", romaji: "chuushoku" },
+      { no: 417, kanji: "夕食", hiragana: "ゆうしょく", arti: "Makan malam", romaji: "yuushoku" },
+      { no: 418, kanji: "外食", hiragana: "がいしょく", arti: "Makan di luar", romaji: "gaishoku" },
+      { no: 419, kanji: "定食", hiragana: "ていしょく", arti: "Makanan dengan menu tetap", romaji: "teishoku" },
+      { no: 420, kanji: "住所", hiragana: "じゅうしょ", arti: "Alamat", romaji: "juushou" },
+      { no: 421, kanji: "訪問", hiragana: "ほうもん", arti: "Kunjungan", romaji: "houmon" },
+      { no: 422, kanji: "経験", hiragana: "けいけん", arti: "Pengalaman", romaji: "keiken" },
+      { no: 423, kanji: "親切", hiragana: "しんせつ", arti: "Ramah", romaji: "shinsetsu" },
+      { no: 424, kanji: "座ります", hiragana: "すわります", arti: "Duduk", romaji: "suwarimasu" },
+      { no: 425, kanji: "立ちます", hiragana: "たちます", arti: "Berdiri", romaji: "tachimasu" },
+      { no: 426, kanji: "～観（人生観）", hiragana: "～かん（じんせいかん）", arti: "Pandangan ~ (pandangan hidup)", romaji: "kan" },
+      { no: 427, kanji: "約～（約6年間）", hiragana: "やく～（やくろくねんかん）", arti: "Kira2, sekitar (sekitar 6 tahun)", romaji: "yaku" },
+      { no: 428, kanji: "計画", hiragana: "けいかく", arti: "Rencana, program", romaji: "keikaku" },
+      { no: 429, kanji: "自信", hiragana: "じしん", arti: "Percaya diri", romaji: "jishin" },
+      { no: 430, kanji: "方法", hiragana: "ほうほう", arti: "Cara", romaji: "houhou" },
+      { no: 431, kanji: "目的", hiragana: "もくてき", arti: "Tujuan", romaji: "mokuteki" },
+      { no: 432, kanji: "難しい", hiragana: "むずかしい", arti: "Sulit", romaji: "muzukashii" },
+      { no: 433, kanji: "通じます", hiragana: "つうじます", arti: "Mengalirkan, menguasai, berhubungan", romaji: "tsuujimasu" },
+      { no: 434, kanji: "習います", hiragana: "ならいます", arti: "Belajar kepada", romaji: "naraimasu" },
+      { no: 435, kanji: "学びます", hiragana: "まなびます", arti: "Belajar", romaji: "manabimasu" },
+      { no: 436, kanji: "～級", hiragana: "～きゅう", arti: "Kelas, tingkat ~", romaji: "kyuu" },
+      { no: 437, kanji: "初級", hiragana: "しょきゅう", arti: "Kelas dasar", romaji: "shokyuu" },
+      { no: 438, kanji: "中級", hiragana: "ちゅうきゅう", arti: "Kelas menengah", romaji: "chuukyuu" },
+      { no: 439, kanji: "上級", hiragana: "じょうきゅう", arti: "Kelas atas", romaji: "joukyuu" },
+      { no: 440, kanji: "相手", hiragana: "あいて", arti: "Pasangan, lawan", romaji: "aite" },
+      { no: 441, kanji: "気持ち", hiragana: "きもち", arti: "Perasaan enak", romaji: "kimochi" },
+      { no: 442, kanji: "恋人", hiragana: "こいびと", arti: "Pacar", romaji: "koibito" },
+      { no: 443, kanji: "出会い", hiragana: "であい", arti: "Pertemuan", romaji: "deai" },
+      { no: 444, kanji: "最近", hiragana: "さいきん", arti: "Akhir-akhir ini", romaji: "saikin" },
+      { no: 445, kanji: "最高", hiragana: "さいこう", arti: "Teratas, tertinggi", romaji: "saikou" },
+      { no: 446, kanji: "出席", hiragana: "しゅっせき", arti: "Kehadiran", romaji: "shusseki" },
+      { no: 447, kanji: "招待", hiragana: "しょうたい", arti: "Undangan", romaji: "shoutai" },
+      { no: 448, kanji: "～合う（知り合う）", hiragana: "～あう（しりあう）", arti: "Cocok ~ (kenal mengenal)", romaji: "au" },
+      { no: 449, kanji: "社会人", hiragana: "しゃかいじん", arti: "Anggota masyarakat", romaji: "shakaijin" },
+      { no: 450, kanji: "職場", hiragana: "しょくば", arti: "Tempat kerja", romaji: "shokuba" },
+      { no: 451, kanji: "給料", hiragana: "きゅうりょう", arti: "Gaji", romaji: "kyuuryou" },
+      { no: 452, kanji: "人間関係", hiragana: "にんげんかんけい", arti: "Hubungan antar manusia", romaji: "ningenkankei" },
+
+      // Bab 9
+      { no: 453, kanji: "挨拶", hiragana: "あいさつ", arti: "Salam, menyapa", romaji: "aisatsu" },
+      { no: 454, kanji: "丁寧", hiragana: "ていねい", arti: "Sopan", romaji: "teinei" },
+      { no: 455, kanji: "礼儀", hiragana: "れいぎ", arti: "Etika, tata krama", romaji: "reigi" },
+      { no: 456, kanji: "失礼", hiragana: "しつれい", arti: "Permisi, tidak sopan", romaji: "shitsurei" },
+      { no: 457, kanji: "感謝", hiragana: "かんしゃ", arti: "Rasa terima kasih", romaji: "kansha" },
+      { no: 458, kanji: "謝罪", hiragana: "しゃざい", arti: "Permintaan maaf", romaji: "shazai" },
+      { no: 459, kanji: "遠慮", hiragana: "えんりょ", arti: "Sungkan, segan", romaji: "enryo" },
+      { no: 460, kanji: "連絡", hiragana: "れんらく", arti: "Menghubungi, kontak", romaji: "renraku" },
+      { no: 461, kanji: "相談", hiragana: "そうだん", arti: "Konsultasi, berdiskusi", romaji: "soudan" },
+      { no: 462, kanji: "報告", hiragana: "ほうこく", arti: "Laporan", romaji: "houkoku" },
+      { no: 463, kanji: "約束", hiragana: "やくそく", arti: "Janji", romaji: "yakusoku" },
+      { no: 464, kanji: "時間割", hiragana: "じかんわり", arti: "Jadwal pelajaran", romaji: "jikanwari" },
+      { no: 465, kanji: "予定", hiragana: "よてい", arti: "Rencana, jadwal", romaji: "yotei" },
+      { no: 466, kanji: "準備", hiragana: "じゅんび", arti: "Persiapan", romaji: "junbi" },
+      { no: 467, kanji: "片付け", hiragana: "かたづけ", arti: "Beres-beres", romaji: "katadzuke" },
+      { no: 468, kanji: "掃除", hiragana: "そうじ", arti: "Membersihkan", romaji: "souji" },
+      { no: 469, kanji: "洗濯", hiragana: "せんたく", arti: "Mencuci pakaian", romaji: "sentaku" },
+      { no: 470, kanji: "生活習慣", hiragana: "せいかつしゅうかん", arti: "Kebiasaan hidup", romaji: "seikatsushuukan" },
+      { no: 471, kanji: "習慣", hiragana: "しゅうかん", arti: "Kebiasaan, adat", romaji: "shuukan" },
+      { no: 472, kanji: "規則", hiragana: "きそく", arti: "Peraturan", romaji: "kisoku" },
+      { no: 473, kanji: "法律", hiragana: "ほうりつ", arti: "Hukum, undang-undang", romaji: "houritsu" },
+      { no: 474, kanji: "注意", hiragana: "ちゅうい", arti: "Peringatan, hati-hati", romaji: "chuui" },
+      { no: 475, kanji: "危険", hiragana: "きけん", arti: "Bahaya", romaji: "kiken" },
+      { no: 476, kanji: "事故", hiragana: "じこ", arti: "Kecelakaan", romaji: "jiko" },
+      { no: 477, kanji: "事件", hiragana: "じけん", arti: "Insiden, kejadian", romaji: "jiken" },
+      { no: 478, kanji: "警察", hiragana: "けいさつ", arti: "Polisi", romaji: "keisatsu" },
+      { no: 479, kanji: "消防", hiragana: "しょうぼう", arti: "Pemadam kebakaran", romaji: "shoubou" },
+      { no: 480, kanji: "救急車", hiragana: "きゅうきゅうしゃ", arti: "Ambulans", romaji: "kyuukyuusha" },
+      { no: 481, kanji: "怪我", hiragana: "けが", arti: "Luka, cedera", romaji: "kega" },
+      { no: 482, kanji: "薬", hiragana: "くすり", arti: "Obat", romaji: "kusuri" },
+      { no: 483, kanji: "注射", hiragana: "ちゅうしゃ", arti: "Suntikan", romaji: "chuusha" },
+      { no: 484, kanji: "診察", hiragana: "しんさつ", arti: "Pemeriksaan medis", romaji: "shinsatsu" },
+      { no: 485, kanji: "手術", hiragana: "しゅじゅつ", arti: "Operasi", romaji: "shujutsu" },
+      { no: 486, kanji: "入院", hiragana: "にゅういん", arti: "Rawat inap", romaji: "nyuuin" },
+      { no: 487, kanji: "退院", hiragana: "たいいん", arti: "Keluar dari rumah sakit", romaji: "taiin" },
+      { no: 488, kanji: "健康診断", hiragana: "けんこうしんだん", arti: "Pemeriksaan kesehatan", romaji: "kenkoushindan" },
+      { no: 489, kanji: "体調", hiragana: "たいちょう", arti: "Kondisi badan", romaji: "taichou" },
+      { no: 490, kanji: "気分", hiragana: "きぶん", arti: "Perasaan, kondisi fisik", romaji: "kibun" },
+      { no: 491, kanji: "安心", hiragana: "あんしん", arti: "Lega, tenang", romaji: "anshin" },
+      { no: 492, kanji: "心配", hiragana: "しんぱい", arti: "Khawatir", romaji: "shinpai" },
+      { no: 493, kanji: "不安", hiragana: "ふあん", arti: "Gelisah, cemas", romaji: "fuan" },
+      { no: 494, kanji: "満足", hiragana: "まんぞく", arti: "Puas", romaji: "manzoku" },
+      { no: 495, kanji: "不満", hiragana: "ふまん", arti: "Tidak puas", romaji: "fuman" },
+      { no: 496, kanji: "感動", hiragana: "かんどう", arti: "Tersentuh, terharu", romaji: "kandou" },
+      { no: 497, kanji: "興味", hiragana: "きょうみ", arti: "Minat, ketertarikan", romaji: "kyoumi" },
+      { no: 498, kanji: "趣味", hiragana: "しゅみ", arti: "Hobi", romaji: "shumi" },
+      { no: 499, kanji: "特技", hiragana: "とくぎ", arti: "Keahlian khusus", romaji: "tokugi" },
+      { no: 500, kanji: "将来", hiragana: "しょうらい", arti: "Masa depan", romaji: "shourai" },
+      { no: 501, kanji: "夢", hiragana: "ゆめ", arti: "Mimpi, cita-cita", romaji: "yume" },
+      { no: 502, kanji: "目標", hiragana: "もくひょう", arti: "Target, sasaran", romaji: "mokuhyou" },
+      { no: 503, kanji: "努力", hiragana: "どりょく", arti: "Usaha, kerja keras", romaji: "doryoku" },
+      { no: 504, kanji: "成功", hiragana: "せいこう", arti: "Sukses, berhasil", romaji: "seikou" },
+      { no: 505, kanji: "失敗", hiragana: "しっぱい", arti: "Gagal", romaji: "shippai" },
+      { no: 506, kanji: "挑戦", hiragana: "ちょうせん", arti: "Tantangan, mencoba", romaji: "chousen" },
+      { no: 507, kanji: "経験者", hiragana: "けいけんしゃ", arti: "Orang berpengalaman", romaji: "keikensha" },
+      { no: 508, kanji: "初心者", hiragana: "しょしんしゃ", arti: "Pemula", romaji: "shoshinsha" },
+      { no: 509, kanji: "専門", hiragana: "せんもん", arti: "Spesialisasi, keahlian", romaji: "senmon" },
+
+      // Bab 10 (No. 510 - 566)
+      { no: 510, kanji: "教室", hiragana: "きょうしつ", arti: "Ruang kelas", romaji: "kyoushitsu" },
+      { no: 511, kanji: "参加します", hiragana: "さんかします", arti: "Berpartisipasi", romaji: "sankashimasu" },
+      { no: 512, kanji: "用意します", hiragana: "よういします", arti: "Menyiapkan", romaji: "youishimasu" },
+      { no: 513, kanji: "牛肉", hiragana: "ぎゅうにく", arti: "Daging sapi", romaji: "gyuuniku" },
+      { no: 514, kanji: "豚肉", hiragana: "ぶたにく", arti: "Daging babi", romaji: "butaniku" },
+      { no: 515, kanji: "皿", hiragana: "さら", arti: "Piring", romaji: "sara" },
+      { no: 516, kanji: "お湯", hiragana: "おゆ", arti: "Air panas", romaji: "oyu" },
+      { no: 517, kanji: "調理方法", hiragana: "ちょうりほうほう", arti: "Cara memasak", romaji: "chourihouhou" },
+      { no: 518, kanji: "甘い", hiragana: "あまい", arti: "Manis", romaji: "amai" },
+      { no: 519, kanji: "辛い", hiragana: "からい", arti: "Pedas", romaji: "karai" },
+      { no: 520, kanji: "数字", hiragana: "すうじ", arti: "Angka, bilangan", romaji: "suuji" },
+      { no: 521, kanji: "机", hiragana: "つくえ", arti: "Meja", romaji: "tsukue" },
+      { no: 522, kanji: "都合", hiragana: "つごう", arti: "Keadaan", romaji: "tsugou" },
+      { no: 523, kanji: "用事", hiragana: "ようじ", arti: "Keperluan", romaji: "youji" },
+      { no: 524, kanji: "氏名", hiragana: "しめい", arti: "Nama lengkap", romaji: "shimei" },
+      { no: 525, kanji: "理由", hiragana: "りゆう", arti: "Alasan", romaji: "riyuu" },
+      { no: 526, kanji: "別に", hiragana: "べつに", arti: "Beda-beda", romaji: "betsuni" },
+      { no: 527, kanji: "連絡先", hiragana: "れんらくさき", arti: "Alamat yang dapat dihubungi", romaji: "renrakusaki" },
+      { no: 528, kanji: "吸います", hiragana: "すいます", arti: "Menghisap", romaji: "suimasu" },
+      { no: 529, kanji: "取ります", hiragana: "とります", arti: "Mengambil", romaji: "torimasu" },
+      { no: 530, kanji: "伝えます", hiragana: "つたえます", arti: "Menyampaikan", romaji: "tsutaemasu" },
+      { no: 531, kanji: "熱", hiragana: "ねつ", arti: "Demam", romaji: "netsu" },
+      { no: 532, kanji: "薬", hiragana: "くすり", arti: "Obat", romaji: "kusuri" },
+      { no: 533, kanji: "医者", hiragana: "いしゃ", arti: "Dokter", romaji: "isha" },
+      { no: 534, kanji: "～才", hiragana: "～さい", arti: "Bakat ~ / umur ~", romaji: "sai" },
+      { no: 535, kanji: "眠い", hiragana: "ねむい", arti: "Ngantuk", romaji: "nemui" },
+      { no: 536, kanji: "記入します", hiragana: "きにゅうします", arti: "Mengisi di kertas", romaji: "kinyuushimasu" },
+      { no: 537, kanji: "顔", hiragana: "かお", arti: "Wajah", romaji: "kao" },
+      { no: 538, kanji: "泣きます", hiragana: "なきます", arti: "Menangis", romaji: "nakimasu" },
+      { no: 539, kanji: "会計", hiragana: "かいけい", arti: "Pembayaran", romaji: "kaikei" },
+      { no: 540, kanji: "電話番号", hiragana: "でんわばんごう", arti: "Nomor telepon", romaji: "denwabangou" },
+      { no: 541, kanji: "牛乳", hiragana: "ぎゅうにゅう", arti: "Susu sapi", romaji: "gyuunyuu" },
+      { no: 542, kanji: "禁煙", hiragana: "きんえん", arti: "Larangan merokok", romaji: "kinen" },
+      { no: 543, kanji: "自由", hiragana: "じゆう", arti: "Bebas", romaji: "jiyuu" },
+      { no: 544, kanji: "切ります", hiragana: "きります", arti: "Memotong", romaji: "kirimasu" },
+      { no: 545, kanji: "焼きます", hiragana: "やきます", arti: "Memanggang", romaji: "yakimasu" },
+      { no: 546, kanji: "旅館", hiragana: "りょかん", arti: "Penginapan", romaji: "ryokan" },
+      { no: 547, kanji: "遊びます", hiragana: "あそびます", arti: "Bermain", romaji: "asobimasu" },
+      { no: 548, kanji: "調べます", hiragana: "しらべます", arti: "Memeriksa", romaji: "shirabemasu" },
+      { no: 549, kanji: "事故", hiragana: "じこ", arti: "Kecelakaan", romaji: "jiko" },
+      { no: 550, kanji: "故障", hiragana: "こしょう", arti: "Kerusakan", romaji: "koshou" },
+      { no: 551, kanji: "指定席", hiragana: "していせき", arti: "Tempat duduk yang ditetapkan", romaji: "shiteiseki" },
+      { no: 552, kanji: "光ります", hiragana: "ひかります", arti: "Bercahaya, bersinar", romaji: "hikarimasu" },
+      { no: 553, kanji: "お知らせ", hiragana: "おしらせ", arti: "Pengumuman", romaji: "oshirase" },
+      { no: 554, kanji: "水道", hiragana: "すいどう", arti: "Ledeng", romaji: "suidou" },
+      { no: 555, kanji: "工事", hiragana: "こうじ", arti: "Konstruksi", romaji: "kouji" },
+      { no: 556, kanji: "場合", hiragana: "ばあい", arti: "Kesempatan", romaji: "baai" },
+      { no: 557, kanji: "条件", hiragana: "じょうけん", arti: "Syarat-syarat, kondisi", romaji: "jouken" },
+      { no: 558, kanji: "開きます", hiragana: "ひらきます", arti: "Membuka", romaji: "hirakimasu" },
+      { no: 559, kanji: "生産します", hiragana: "せいさんします", arti: "Memproduksi", romaji: "seisanshimasu" },
+      { no: 560, kanji: "体験", hiragana: "たいけん", arti: "Percobaan", romaji: "taiken" },
+      { no: 561, kanji: "国際交流", hiragana: "こくさいこうりゅう", arti: "Pertukaran budaya internasional", romaji: "kokusaikouryuu" },
+      { no: 562, kanji: "申し込みます", hiragana: "もうしこみます", arti: "Melamar (pekerjaan)", romaji: "moushikomimasu" },
+      { no: 563, kanji: "昨年", hiragana: "さくねん", arti: "Tahun lalu", romaji: "sakunen" },
+      { no: 564, kanji: "毎年", hiragana: "まいとし", arti: "Setiap tahun", romaji: "maitoshi" },
+      { no: 565, kanji: "袋", hiragana: "ふくろ", arti: "Kantong plastik", romaji: "fukuro" },
+      { no: 566, kanji: "店長", hiragana: "てんちょう", arti: "Manajer toko", romaji: "tenchou" }
+    ];
+
+    // Otomatis assign properti bab berdasarkan nomor Kanji
+    const kanjiMasterData = rawKanjiData.map(item => {
+      let bab = 1;
+      for (const [ch, range] of Object.entries(chaptersMeta)) {
+        if (item.no >= range.min && item.no <= range.max) {
+          bab = parseInt(ch);
+          break;
+        }
+      }
+      return { ...item, bab };
+    });
+
+    // Variables Status
+    let quizType = 'mc';
+    let selectedChapter = 'all';
+    let selectedRange = 'all';
+    let selectedCount = 20;
+    let selectedOrderMode = 'random';
+    let currentQuizQueue = [];
+    let currentQuizIndex = 0;
+    let score = 0;
+    let isDarkMode = true;
+
+    // Helper untuk generate opsi rentang per-20 soal secara teratur
+    function updateRangeOptions(chapVal) {
+      const rangeSelect = document.getElementById('range-select');
+      rangeSelect.innerHTML = '';
+
+      let min = 1, max = 566;
+      if (chapVal !== 'all') {
+        min = chaptersMeta[chapVal].min;
+        max = chaptersMeta[chapVal].max;
+      }
+
+      // Opsi "Semua" di bab/rentang pilihan
+      const defaultOpt = document.createElement('option');
+      defaultOpt.value = 'all';
+      defaultOpt.textContent = chapVal === 'all' 
+        ? 'Semua Kanji (No. 1 - 566)' 
+        : `Semua Kanji di Bab ${chapVal} (No. ${min} - ${max})`;
+      rangeSelect.appendChild(defaultOpt);
+
+      // Potong per kelipatan 20
+      let start = min;
+      while (start <= max) {
+        let end = Math.min(start + 19, max);
+        const opt = document.createElement('option');
+        opt.value = `${start}-${end}`;
+        opt.textContent = `No. ${start} - ${end}`;
+        rangeSelect.appendChild(opt);
+        start = end + 1;
+      }
+
+      selectedRange = 'all';
+    }
+
+    function onChapterChange(val) {
+      selectedChapter = val;
+      updateRangeOptions(val);
+    }
+
+    // Initialize awal dropdown rentang
+    updateRangeOptions('all');
+
+    // Dark Mode Toggle
+    function toggleDarkMode() {
+      isDarkMode = !isDarkMode;
+      const htmlEl = document.documentElement;
+      const themeIcon = document.getElementById('theme-icon');
+
+      if (isDarkMode) {
+        htmlEl.classList.add('dark');
+        document.body.className = "bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between transition-colors duration-200 selection:bg-indigo-500 selection:text-white";
+        themeIcon.innerText = "☀️";
+      } else {
+        htmlEl.classList.remove('dark');
+        document.body.className = "bg-slate-50 text-slate-900 font-sans min-h-screen flex flex-col justify-between transition-colors duration-200 selection:bg-indigo-500 selection:text-white";
+        themeIcon.innerText = "🌙";
+      }
+    }
+
+    // Navigasi Layar
+    function showScreen(screenName) {
+      document.getElementById('screen-home').classList.add('hidden');
+      document.getElementById('screen-quiz').classList.add('hidden');
+      document.getElementById('screen-result').classList.add('hidden');
+      document.getElementById('screen-list').classList.add('hidden');
+
+      document.getElementById(`screen-${screenName}`).classList.remove('hidden');
+
+      if (screenName === 'list') {
+        filterKanjiList();
+      }
+    }
+
+    // Helper Pengaturan Kuis
+    function setQuizType(type) {
+      quizType = type;
+      const btnMc = document.getElementById('type-mc');
+      const btnTyping = document.getElementById('type-typing');
+
+      if (type === 'mc') {
+        btnMc.className = "border border-indigo-500 bg-indigo-500/10 text-indigo-400 rounded-xl py-2.5 px-3 font-semibold text-xs transition";
+        btnTyping.className = "border border-slate-700 bg-slate-900/50 text-slate-300 hover:border-slate-600 rounded-xl py-2.5 px-3 font-semibold text-xs transition";
+      } else {
+        btnTyping.className = "border border-indigo-500 bg-indigo-500/10 text-indigo-400 rounded-xl py-2.5 px-3 font-semibold text-xs transition";
+        btnMc.className = "border border-slate-700 bg-slate-900/50 text-slate-300 hover:border-slate-600 rounded-xl py-2.5 px-3 font-semibold text-xs transition";
+      }
+    }
+
+    function setRange(val) {
+      selectedRange = val;
+    }
+
+    function setCount(count) {
+      selectedCount = count;
+      document.querySelectorAll('.count-btn').forEach(btn => {
+        btn.className = "count-btn border border-slate-700 bg-slate-900/50 text-slate-300 rounded-xl py-2 font-semibold text-xs transition";
+      });
+      event.target.className = "count-btn border border-indigo-500 bg-indigo-500/10 text-indigo-400 rounded-xl py-2 font-semibold text-xs transition";
+    }
+
+    function setOrderMode(mode) {
+      selectedOrderMode = mode;
+      const btnRand = document.getElementById('mode-random');
+      const btnSeq = document.getElementById('mode-seq');
+
+      if (mode === 'random') {
+        btnRand.className = "border border-indigo-500 bg-indigo-500/10 text-indigo-400 rounded-xl py-2 font-semibold text-xs transition";
+        btnSeq.className = "border border-slate-700 bg-slate-900/50 text-slate-300 hover:border-slate-600 rounded-xl py-2 font-semibold text-xs transition";
+      } else {
+        btnSeq.className = "border border-indigo-500 bg-indigo-500/10 text-indigo-400 rounded-xl py-2 font-semibold text-xs transition";
+        btnRand.className = "border border-slate-700 bg-slate-900/50 text-slate-300 hover:border-slate-600 rounded-xl py-2 font-semibold text-xs transition";
+      }
+    }
+
+    // Logika Kuis
+    function startQuiz() {
+      let pool = [...kanjiMasterData];
+
+      // Filter Bab
+      if (selectedChapter !== 'all') {
+        pool = pool.filter(item => item.bab === parseInt(selectedChapter));
+      }
+
+      // Filter Rentang
+      if (selectedRange !== 'all') {
+        const [minNo, maxNo] = selectedRange.split('-').map(Number);
+        pool = pool.filter(item => item.no >= minNo && item.no <= maxNo);
+      }
+
+      if (pool.length === 0) {
+        alert("Tidak ada soal dalam rentang ini!");
+        return;
+      }
+
+      if (selectedOrderMode === 'random') {
+        pool.sort(() => Math.random() - 0.5);
+      } else {
+        pool.sort((a, b) => a.no - b.no);
+      }
+
+      if (selectedCount !== 'all') {
+        pool = pool.slice(0, Math.min(selectedCount, pool.length));
+      }
+
+      currentQuizQueue = pool.map(item => generateQuestionItem(item));
+      currentQuizIndex = 0;
+      score = 0;
+
+      showScreen('quiz');
+      renderQuestion();
+    }
+
+    function generateQuestionItem(item) {
+      const otherItems = kanjiMasterData.filter(x => x.no !== item.no);
+      otherItems.sort(() => Math.random() - 0.5);
+      const wrongHiraganas = otherItems.slice(0, 3).map(x => x.hiragana);
+
+      const options = [item.hiragana, ...wrongHiraganas];
+      options.sort(() => Math.random() - 0.5);
+
+      return {
+        no: item.no,
+        kanji: item.kanji,
+        hiragana: item.hiragana,
+        romaji: item.romaji,
+        arti: item.arti,
+        correctAnswer: item.hiragana,
+        options: options
+      };
+    }
+
+    function renderQuestion() {
+      const q = currentQuizQueue[currentQuizIndex];
+      const total = currentQuizQueue.length;
+
+      document.getElementById('quiz-kanji-no').innerText = `No. ${q.no}`;
+      document.getElementById('quiz-progress-text').innerText = `${currentQuizIndex + 1} / ${total}`;
+      document.getElementById('progress-bar').style.width = `${((currentQuizIndex) / total) * 100}%`;
+
+      document.getElementById('quiz-kanji-text').innerText = q.kanji;
+      document.getElementById('next-btn').classList.add('hidden');
+
+      const areaMc = document.getElementById('area-mc');
+      const areaTyping = document.getElementById('area-typing');
+
+      if (quizType === 'mc') {
+        areaMc.classList.remove('hidden');
+        areaTyping.classList.add('hidden');
+        renderMultipleChoiceOptions(q);
+      } else {
+        areaMc.classList.add('hidden');
+        areaTyping.classList.remove('hidden');
+        setupTypingMode();
+      }
+    }
+
+    function renderMultipleChoiceOptions(q) {
+      const container = document.getElementById('area-mc');
+      container.innerHTML = '';
+
+      q.options.forEach((hiraganaText) => {
+        const btn = document.createElement('button');
+        btn.className = "option-btn w-full text-center p-4 rounded-xl border border-slate-700 bg-slate-800 hover:border-slate-500 text-slate-100 font-bold font-jp text-lg md:text-xl transition-all shadow-sm";
+        btn.innerHTML = `<span class="font-jp">${hiraganaText}</span>`;
+        btn.onclick = () => handleMCOptionSelect(btn, hiraganaText, q.correctAnswer);
+        container.appendChild(btn);
+      });
+    }
+
+    function handleMCOptionSelect(selectedBtn, selectedText, correctText) {
+      const allBtns = document.querySelectorAll('.option-btn');
+      allBtns.forEach(btn => {
+        btn.onclick = null;
+        btn.classList.remove('hover:border-slate-500');
+        
+        if (btn.querySelector('span').innerText === correctText) {
+          btn.className = "option-btn w-full text-center p-4 rounded-xl border border-emerald-500 bg-emerald-950/40 text-emerald-400 font-bold font-jp text-lg md:text-xl transition-all shadow-sm";
+        }
+      });
+
+      if (selectedText === correctText) {
+        score++;
+      } else {
+        selectedBtn.className = "option-btn w-full text-center p-4 rounded-xl border border-rose-500 bg-rose-950/40 text-rose-400 font-bold font-jp text-lg md:text-xl transition-all shadow-sm";
+      }
+
+      document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    function setupTypingMode() {
+      const input = document.getElementById('typing-input');
+      const feedback = document.getElementById('typing-feedback');
+      
+      input.value = '';
+      input.disabled = false;
+      input.focus();
+      
+      feedback.classList.add('hidden');
+      feedback.className = "mt-2.5 p-3 rounded-lg text-xs font-semibold hidden text-center";
+    }
+
+    function cleanString(str) {
+      return (str || '').toLowerCase().replace(/[～\s\-_（）\(\)]/g, '').trim();
+    }
+
+    function submitTypingAnswer() {
+      const q = currentQuizQueue[currentQuizIndex];
+      const input = document.getElementById('typing-input');
+      const feedback = document.getElementById('typing-feedback');
+      
+      if (!input.value.trim() || input.disabled) return;
+
+      const userVal = cleanString(input.value);
+      const targetHiragana = cleanString(q.hiragana);
+      const targetRomaji = cleanString(q.romaji);
+
+      const isCorrect = (userVal === targetHiragana || userVal === targetRomaji);
+
+      input.disabled = true;
+      feedback.classList.remove('hidden');
+
+      if (isCorrect) {
+        score++;
+        feedback.className = "mt-2.5 p-3 rounded-lg text-xs font-semibold text-center border border-emerald-500/50 bg-emerald-950/30 text-emerald-300";
+        feedback.innerHTML = `Benar! Cara baca: <span class="font-jp font-bold">${q.hiragana}</span> (${q.arti})`;
+      } else {
+        feedback.className = "mt-2.5 p-3 rounded-lg text-xs font-semibold text-center border border-rose-500/50 bg-rose-950/30 text-rose-300";
+        feedback.innerHTML = `Salah. Jawaban benar: <span class="font-jp font-bold">${q.hiragana}</span> [${q.romaji}] (${q.arti})`;
+      }
+
+      document.getElementById('next-btn').classList.remove('hidden');
+    }
+
+    function nextQuestion() {
+      currentQuizIndex++;
+      if (currentQuizIndex < currentQuizQueue.length) {
+        renderQuestion();
+      } else {
+        renderResults();
+      }
+    }
+
+    function renderResults() {
+      showScreen('result');
+      const total = currentQuizQueue.length;
+      const percentage = Math.round((score / total) * 100);
+
+      document.getElementById('result-score').innerText = `${score}/${total}`;
+      document.getElementById('result-percentage').innerText = `${percentage}%`;
+
+      const subtitle = document.getElementById('result-subtitle');
+      if (percentage >= 80) {
+        subtitle.innerText = "Sangat Bagus! Penguasaan Kanji kamu luar biasa.";
+      } else if (percentage >= 60) {
+        subtitle.innerText = "Cukup baik! Teruskan latihan kuis.";
+      } else {
+        subtitle.innerText = "Terus tingkatkan latihan hafalan Kanjimu.";
+      }
+    }
+
+    // Render Tabel Daftar Kanji
+    function renderKanjiList(data) {
+      const container = document.getElementById('kanji-table-container');
+      
+      if (data.length === 0) {
+        container.innerHTML = `<p class="text-center text-slate-500 py-6 text-xs">Tidak ditemukan...</p>`;
+        return;
+      }
+
+      let html = `
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="border-b border-slate-700 text-[11px] font-semibold text-slate-400">
+              <th class="py-2.5 px-2">No</th>
+              <th class="py-2.5 px-2">Bab</th>
+              <th class="py-2.5 px-2">Kanji</th>
+              <th class="py-2.5 px-2">Hiragana</th>
+              <th class="py-2.5 px-2">Arti</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-slate-800 text-xs md:text-sm">
+      `;
+
+      data.forEach(item => {
+        html += `
+          <tr class="hover:bg-slate-700/30 transition">
+            <td class="py-2.5 px-2 font-mono text-slate-500 text-xs">#${item.no}</td>
+            <td class="py-2.5 px-2 font-semibold text-indigo-400/90 text-xs">Bab ${item.bab}</td>
+            <td class="py-2.5 px-2 font-jp text-xl font-bold text-slate-100">${item.kanji}</td>
+            <td class="py-2.5 px-2 font-jp text-indigo-400 font-medium">${item.hiragana} <span class="text-[11px] text-slate-500 font-normal">(${item.romaji})</span></td>
+            <td class="py-2.5 px-2 text-slate-300 font-medium">${item.arti}</td>
+          </tr>
+        `;
+      });
+
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+
+    // Filter + Sorting Daftar Kanji
+    function filterKanjiList() {
+      const query = document.getElementById('search-input').value.toLowerCase();
+      const chapFilter = document.getElementById('list-chapter-filter').value;
+      const sortOrder = document.getElementById('list-sort-order').value;
+
+      let filtered = kanjiMasterData.filter(item => {
+        const matchesQuery = item.kanji.toLowerCase().includes(query) ||
+                             item.hiragana.toLowerCase().includes(query) ||
+                             item.romaji.toLowerCase().includes(query) ||
+                             item.arti.toLowerCase().includes(query) ||
+                             item.no.toString().includes(query);
+
+        const matchesChap = chapFilter === 'all' || item.bab === parseInt(chapFilter);
+
+        return matchesQuery && matchesChap;
+      });
+
+      if (sortOrder === 'asc') {
+        filtered.sort((a, b) => a.no - b.no);
+      } else {
+        filtered.sort((a, b) => b.no - a.no);
+      }
+
+      renderKanjiList(filtered);
+    }
+  </script>
+</body>
+</html>
